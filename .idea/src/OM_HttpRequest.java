@@ -13,18 +13,20 @@ public class OM_HttpRequest {
         this.client = HttpClient.newHttpClient();
     }
 
+
     public String sendRequest() throws Exception {
 
-        // Berlin
-        String url = "https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&current_weather=true";
+            // Berlin
+            String url = "https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&current_weather=true";
 
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .GET()
-                .build();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .GET()
+                    .build();
 
-        HttpResponse<String> response =
-                client.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response =
+                    client.send(request, HttpResponse.BodyHandlers.ofString());
+
 
         // JSON auslesen
         String json = response.body();
@@ -41,7 +43,10 @@ public class OM_HttpRequest {
 
     public static void main(String[] args) throws Exception {
         OM_HttpRequest req = new OM_HttpRequest();
-        System.out.println(req.sendRequest());
-        System.out.println("JSON wurde in Datenbank/current_weather_berlin.json gespeichert!");
+        while (true) {
+            System.out.println(req.sendRequest());
+            System.out.println("JSON wurde in Datenbank/current_weather_berlin.json gespeichert!");
+            Thread.sleep(5000);
+        }
     }
 }
