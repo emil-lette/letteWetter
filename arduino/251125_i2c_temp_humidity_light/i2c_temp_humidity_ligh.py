@@ -23,20 +23,20 @@ while True:
     hum = sensor.humidity()
 
     # licht sensor
-    licht_65000 = ldr.read_u16()
-    licht = (licht_65000 * 25) // 65536 + 1
+    #licht_65000 = ldr.read_u16()
+    #licht = (licht_65000 * 25) // 65536 + 1
 
     # i2c 
     lcd.clear()
     lcd.move_to(0, 0)
-    lcd.putstr("T:{}C H:{}%".format(temp, hum))
+    lcd.putstr("temp: {}°C".format(temp))
     lcd.move_to(0, 1)
-    lcd.putstr("Licht: {}".format(licht))
+    lcd.putstr("Humidity: {}%".format(hum))
+    #lcd.putstr("Licht: {}".format(licht))
 
     # println
     print("Temperatur:", temp, "°C")
     print("Feuchtigkeit:", hum, "%")
-    print("Lichtstärke:", licht)
-
+   
     sleep(1)
 
