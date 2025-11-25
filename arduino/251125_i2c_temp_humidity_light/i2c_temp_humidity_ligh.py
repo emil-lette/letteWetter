@@ -29,9 +29,9 @@ while True:
     # i2c 
     lcd.clear()
     lcd.move_to(0, 0)
-    lcd.putstr("temp: {}°C".format(temp))
+    lcd.putstr("Temperatur: {}°C".format(temp))
     lcd.move_to(0, 1)
-    lcd.putstr("Humidity: {}%".format(hum))
+    lcd.putstr("Humidity:    {}%".format(hum))
     #lcd.putstr("Licht: {}".format(licht))
 
     # println
