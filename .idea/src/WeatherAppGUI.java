@@ -3,34 +3,35 @@ import java.awt.*;
 
 public class WeatherAppGUI extends JFrame {
 
-    private JLabel currentCondition;
-    private JLabel currentTemp;
-
     public WeatherAppGUI() {
         setTitle("Wetter App");
-        setSize(400, 200);
+        setSize(400, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new GridLayout(2, 1));
 
-        // Sonne laden > skalieren
-        ImageIcon sunIcon = new ImageIcon(".idea/src/img/sun.png");
+        // current weather
+        JPanel weatherPanel = new JPanel(new GridLayout(1, 2));
+        ImageIcon sunIcon = new ImageIcon("src/img/sun.png");
         Image sunImage = sunIcon.getImage();
         Image scaledSun = sunImage.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+        JLabel currentCondition = new JLabel(new ImageIcon(scaledSun));
+        JLabel currentTemp = new JLabel("10°C");
+        weatherPanel.add(currentCondition);
+        weatherPanel.add(currentTemp);
 
-        // JLabel
-        currentCondition = new JLabel(new ImageIcon(scaledSun));
-        currentTemp = new JLabel("10°C");
+        // test
+        JPanel testPanel = new JPanel();
+        JLabel testLabel = new JLabel("test test", SwingConstants.CENTER);
+        testPanel.add(testLabel);
 
-        add(currentCondition);
-        add(currentTemp);
+        // Panels zum JFrame hinzufügen
+        add(weatherPanel);
+        add(testPanel);
 
         setVisible(true);
-
-        System.out.println("Bild geladen? " + (sunIcon.getIconWidth() > 0));
-
     }
 
     public static void main(String[] args) {
         new WeatherAppGUI();
     }
 }
-
