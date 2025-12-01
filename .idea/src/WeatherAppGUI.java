@@ -12,7 +12,7 @@ public class WeatherAppGUI extends JFrame {
         /*============================================================================*/
 
 
-        // current weather
+        // current weather:
         JPanel weatherPanel = new JPanel(new GridLayout(1, 2));
         ImageIcon sunIcon = new ImageIcon("src/img/sun.png");
         Image sunImage = sunIcon.getImage();
