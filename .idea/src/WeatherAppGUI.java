@@ -54,10 +54,6 @@ public class WeatherAppGUI extends JFrame {
         testPanel.add(montag);
         testPanel.add(dienstag);
         testPanel.add(mittwoch);
-
-        testPanel.add(montag);
-        testPanel.add(dienstag);
-        testPanel.add(mittwoch);
         testPanel.add(donnerstag);
         testPanel.add(freitag);
         testPanel.add(samstag);
