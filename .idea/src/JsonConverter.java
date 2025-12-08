@@ -16,7 +16,7 @@ public class JsonConverter {
 
             ObjectMapper mapper = new ObjectMapper();
 
-            JsonNode root = mapper.readTree(new File(".idea/src/Datenbank/current_weather_berlin.json"));
+            JsonNode root = mapper.readTree(new File("src/Datenbank/current_weather_berlin.json"));
 
             // --- Top-level fields ---
 

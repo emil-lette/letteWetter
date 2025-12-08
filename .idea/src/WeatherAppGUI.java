@@ -7,7 +7,7 @@ public class WeatherAppGUI extends JFrame {
         setTitle("Wetter App");
         setSize(1000, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new GridLayout(2, 1));
+        setLayout(new GridLayout(1, 1));
 
         /*============================================================================*/
 
