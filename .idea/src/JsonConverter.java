@@ -1,9 +1,6 @@
 import com.fasterxml.jackson.databind.JsonNode;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import java.io.File;
-
 import java.io.IOException;
 
 public class JsonConverter {
@@ -13,13 +10,11 @@ public class JsonConverter {
         try {
 
             // --- Load JSON ---
-
             ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(new File(".idea/src/Datenbank/current_weather_berlin.json"));
 
-            JsonNode root = mapper.readTree(new File("src/Datenbank/current_weather_berlin.json"));
 
             // --- Top-level fields ---
-
             double latitude = root.get("latitude").asDouble();
 
             double longitude = root.get("longitude").asDouble();
@@ -34,8 +29,8 @@ public class JsonConverter {
 
             double elevation = root.get("elevation").asDouble();
 
-            // --- Current weather ---
 
+            // --- Current weather ---
             JsonNode weather = root.get("current_weather");
 
             String time = weather.get("time").asText();
@@ -50,8 +45,8 @@ public class JsonConverter {
 
             int weatherCode = weather.get("weathercode").asInt();
 
-            // --- Pretty print ---
 
+            // --- Pretty print ---
             System.out.println("========= Weather Databank =========");
 
             System.out.println("Latitude:            " + latitude);
@@ -91,4 +86,3 @@ public class JsonConverter {
     }
 
 }
-
