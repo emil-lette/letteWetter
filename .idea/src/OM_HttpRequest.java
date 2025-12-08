@@ -4,6 +4,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.net.http.HttpRequest;
 
 public class OM_HttpRequest {
 
@@ -11,6 +12,7 @@ public class OM_HttpRequest {
 
     public OM_HttpRequest() {
         this.client = HttpClient.newHttpClient();
+
     }
 
     public String sendRequest() throws Exception {
