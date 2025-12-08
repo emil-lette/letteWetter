@@ -15,8 +15,8 @@ public class OM_HttpRequest {
 
     public String sendRequest() throws Exception {
 
-        // Berlin (default):
-        String url = "https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&current_weather=true";
+        // Berlin (default)
+        String url = "https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&daily=weather_code,temperature_2m_min,temperature_2m_max,sunset,sunrise,rain_sum,showers_sum,snowfall_sum,precipitation_hours,precipitation_probability_max,uv_index_max&hourly=temperature_2m,showers,rain,snowfall,precipitation_probability,weather_code,cloud_cover,uv_index,is_day&current=temperature_2m,is_day,precipitation,rain,showers,snowfall,weather_code,cloud_cover,wind_speed_10m";
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
