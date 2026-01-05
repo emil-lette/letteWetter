@@ -44,7 +44,7 @@ public class WeatherAppGUI extends JFrame {
             case 1, 2, 3 -> iconPath = "src/img/cloud.png";
             case 61, 63, 65 -> iconPath = "src/img/rain.png";
             case 71, 73, 75 -> iconPath = "src/img/snow.png";
-            default -> iconPath = "src/img/cloud.png";
+            default -> iconPath = "src/img/sun.png";
         }
 
         ImageIcon icon = new ImageIcon(iconPath);
@@ -52,7 +52,7 @@ public class WeatherAppGUI extends JFrame {
 
         JLabel currentCondition = new JLabel(new ImageIcon(scaledIcon));
         JLabel currentTemp = new JLabel(temperature + " °C", SwingConstants.CENTER);
-        currentTemp.setFont(new Font("Arial", Font.BOLD, 24));
+        currentTemp.setFont(new Font("Arial", Font.BOLD, 50));
 
         weatherPanel.add(currentCondition);
         weatherPanel.add(currentTemp);

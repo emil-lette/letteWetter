@@ -1,3 +1,5 @@
+// Berlin 52.52 x 13.419998
+
 {
   "latitude": 52.52,
   "longitude": 13.419998,
@@ -14,20 +16,5 @@
     "winddirection": "°",
     "is_day": "",
     "weathercode": "wmo code"
-  },
-  "current_weather": {
-    "time": "2025-11-24T12:45",
-    "interval": 900,
-    "temperature": 2.5,
-    "windspeed": 7.3,
-    "winddirection": 171,
-    "is_day": 1,
-    "weathercode": 2
-  },
-  "daily_weather": [
-    { "time": "06:00", "temperature": 2, "condition": "Regen", "rain_chance": 80 },
-    { "time": "12:00", "temperature": 4, "condition": "Sonnig", "rain_chance": 20 },
-    { "time": "18:00", "temperature": 3, "condition": "Bewölkt", "rain_chance": 10 },
-    { "time": "24:00", "temperature": 1, "condition": "Klar", "rain_chance": 0 }
-  ]
+  }
 }
