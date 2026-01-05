@@ -1,0 +1,42 @@
+{
+  "latitude": 52.52,
+  "longitude": 13.419998,
+  "generationtime_ms": 0.06854534149169922,
+  "utc_offset_seconds": 0,
+  "timezone": "GMT",
+  "timezone_abbreviation": "GMT",
+  "elevation": 38.0,
+  "current_weather_units": {
+    "time": "iso8601",
+    "interval": "seconds",
+    "temperature": "°C",
+    "windspeed": "km/h",
+    "winddirection": "°",
+    "is_day": "",
+    "weathercode": "wmo code"
+  },
+  "current_weather": {
+    "time": "2025-11-24T12:45",
+    "interval": 900,
+    "temperature": 2.5,
+    "windspeed": 7.3,
+    "winddirection": 171,
+    "is_day": 1,
+    "weathercode": 2
+  },
+  "daily_weather": [
+    { "time": "06:00", "temperature": 2, "condition": "Regen", "rain_chance": 80 },
+    { "time": "12:00", "temperature": 4, "condition": "Sonnig", "rain_chance": 20 },
+    { "time": "18:00", "temperature": 3, "condition": "Bewölkt", "rain_chance": 10 },
+    { "time": "24:00", "temperature": 1, "condition": "Klar", "rain_chance": 0 }
+  ],
+  "weekly_weather": [
+    { "day": "Montag", "condition": "Sonnig", "temperature": 5, "rain_chance": 30 },
+    { "day": "Dienstag", "condition": "Regen", "temperature": 3, "rain_chance": 70 },
+    { "day": "Mittwoch", "condition": "Bewölkt", "temperature": 4, "rain_chance": 20 },
+    { "day": "Donnerstag", "condition": "Klar", "temperature": 6, "rain_chance": 10 },
+    { "day": "Freitag", "condition": "Sonnig", "temperature": 7, "rain_chance": 0 },
+    { "day": "Samstag", "condition": "Regen", "temperature": 2, "rain_chance": 60 },
+    { "day": "Sonntag", "condition": "Bewölkt", "temperature": 3, "rain_chance": 40 }
+  ]
+}
