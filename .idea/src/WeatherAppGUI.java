@@ -11,7 +11,7 @@ public class WeatherAppGUI extends JFrame {
         setTitle("Wetter App");
         setSize(600, 900);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new GridLayout(3, 1)); // 3 Panels: Current, Tages, Wochen
+        setLayout(new GridLayout(4, 1)); // 4 Panels: Current, Tages, Wochen, Button
 
         double temperature = 0;
         int weatherCode = 0;
@@ -96,13 +96,23 @@ public class WeatherAppGUI extends JFrame {
             }
         } else {
             System.out.println("Fehler beim Auslesen der Wochenübersicht");
-            // Optional: Hier kannst du hartcodierte Werte hinzufügen
         }
+
+        /* ===== BUTTON PANEL ===== */
+        JPanel buttonPanel = new JPanel();
+        JButton searchButton = new JButton("Search starten");
+        searchButton.setFont(new Font("Arial", Font.BOLD, 16));
+
+        // Button klick -> search.main starten
+        searchButton.addActionListener(e -> search.main(new String[]{}));
+
+        buttonPanel.add(searchButton);
 
         // Panels zum JFrame hinzufügen
         add(weatherPanel);
         add(tagesPanel);
         add(wochenPanel);
+        add(buttonPanel);
 
         setVisible(true);
     }
@@ -110,5 +120,4 @@ public class WeatherAppGUI extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(WeatherAppGUI::new);
     }
-    //
 }
