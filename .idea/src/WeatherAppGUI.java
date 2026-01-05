@@ -4,21 +4,62 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 
 public class WeatherAppGUI extends JFrame {
 
-    public WeatherAppGUI() {
-        setTitle("Wetter App");
-        setSize(600, 900);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new GridLayout(4, 1)); // 4 Panels: Current, Tages, Wochen, Button
+    private JTextField cityField;
+    private JButton searchButton;
+    private JLabel coordinatesLabel;
+    private JLabel cityLabel;
 
+    public WeatherAppGUI() {
+        setTitle("Wetter App + Search");
+        setSize(600, 1000);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout(10, 10));
+
+        /* ===== SEARCH PANEL ===== */
+        JPanel searchPanel = new JPanel(new BorderLayout(5,5));
+
+        // Eingabefeld + Button
+        JPanel inputPanel = new JPanel(new FlowLayout());
+        cityField = new JTextField(20);
+        searchButton = new JButton("Search");
+        inputPanel.add(cityField);
+        inputPanel.add(searchButton);
+
+        // Ergebnisanzeige
+        JPanel resultPanel = new JPanel(new GridLayout(2,1));
+        coordinatesLabel = new JLabel("Coordinates: 52.52 13.42", SwingConstants.CENTER);
+        cityLabel = new JLabel("City: Berlin", SwingConstants.CENTER);
+        resultPanel.add(coordinatesLabel);
+        resultPanel.add(cityLabel);
+
+        searchPanel.add(inputPanel, BorderLayout.NORTH);
+        searchPanel.add(resultPanel, BorderLayout.CENTER);
+
+        add(searchPanel, BorderLayout.NORTH);
+
+        // Button Action
+        searchButton.addActionListener(e -> {
+            String city = cityField.getText().trim();
+            if (!city.isEmpty()) {
+                fetchCoordinates(city);
+            } else {
+                JOptionPane.showMessageDialog(this, "Please enter a city");
+            }
+        });
+
+        /* ===== WEATHER DATA ===== */
         double temperature = 0;
         int weatherCode = 0;
         JsonNode daily = null;
         JsonNode weekly = null;
 
-        // JSON laden
         try {
             ObjectMapper mapper = new ObjectMapper();
             JsonNode root = mapper.readTree(new File(".idea/src/Datenbank/test.json"));
@@ -36,8 +77,6 @@ public class WeatherAppGUI extends JFrame {
 
         /* ===== CURRENT WEATHER PANEL ===== */
         JPanel weatherPanel = new JPanel(new GridLayout(1, 2));
-
-        // Icon auswählen anhand weatherCode
         String iconPath;
         switch (weatherCode) {
             case 0 -> iconPath = "src/img/sun.png";
@@ -60,7 +99,7 @@ public class WeatherAppGUI extends JFrame {
         /* ===== TAGESÜBERSICHT PANEL ===== */
         JPanel tagesPanel = new JPanel();
         int rows = (daily != null) ? daily.size() : 4;
-        tagesPanel.setLayout(new GridLayout(rows, 4, 10, 10)); // 4 Spalten: Zeit, Zustand, Temp, Regen%
+        tagesPanel.setLayout(new GridLayout(rows, 4, 10, 10));
 
         if (daily != null) {
             for (JsonNode entry : daily) {
@@ -74,13 +113,10 @@ public class WeatherAppGUI extends JFrame {
                 tagesPanel.add(new JLabel(temp));
                 tagesPanel.add(new JLabel(rain));
             }
-        } else {
-            System.out.println("Fehler beim Auslesen der Tagesübersicht");
         }
 
         /* ===== WOCHENÜBERSICHT PANEL ===== */
-        JPanel wochenPanel = new JPanel(new GridLayout(4, 7)); // 4 Reihen, 7 Tage
-
+        JPanel wochenPanel = new JPanel(new GridLayout(4, 7));
         if (weekly != null) {
             for (JsonNode entry : weekly) {
                 wochenPanel.add(new JLabel(entry.get("day").asText()));
@@ -94,27 +130,61 @@ public class WeatherAppGUI extends JFrame {
             for (JsonNode entry : weekly) {
                 wochenPanel.add(new JLabel(entry.get("rain_chance").asText() + " %"));
             }
-        } else {
-            System.out.println("Fehler beim Auslesen der Wochenübersicht");
         }
 
-        /* ===== BUTTON PANEL ===== */
-        JPanel buttonPanel = new JPanel();
-        JButton searchButton = new JButton("Search starten");
-        searchButton.setFont(new Font("Arial", Font.BOLD, 16));
+        /* ===== ADD WEATHER PANELS TO CENTER ===== */
+        JPanel weatherMainPanel = new JPanel();
+        weatherMainPanel.setLayout(new BorderLayout(5,5));
+        weatherMainPanel.add(weatherPanel, BorderLayout.NORTH);
+        weatherMainPanel.add(tagesPanel, BorderLayout.CENTER);
+        weatherMainPanel.add(wochenPanel, BorderLayout.SOUTH);
 
-        // Button klick -> search.main starten
-        searchButton.addActionListener(e -> search.main(new String[]{}));
-
-        buttonPanel.add(searchButton);
-
-        // Panels zum JFrame hinzufügen
-        add(weatherPanel);
-        add(tagesPanel);
-        add(wochenPanel);
-        add(buttonPanel);
+        add(weatherMainPanel, BorderLayout.CENTER);
 
         setVisible(true);
+    }
+
+    private void fetchCoordinates(String city) {
+        try {
+            String encodedCity = URLEncoder.encode(city, "UTF-8");
+            String apiUrl = "https://geocoding-api.open-meteo.com/v1/search?name=" + encodedCity;
+
+            URL url = new URL(apiUrl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+
+            int responseCode = connection.getResponseCode();
+            if (responseCode == 200) {
+                InputStream responseStream = connection.getInputStream();
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode root = mapper.readTree(responseStream);
+
+                // JSON speichern
+                File outFile = new File(".idea/src/Datenbank/search.json");
+                mapper.writerWithDefaultPrettyPrinter().writeValue(outFile, root);
+
+                if (root.has("results") && root.get("results").size() > 0) {
+                    JsonNode first = root.get("results").get(0);
+                    double latitude = first.get("latitude").asDouble();
+                    double longitude = first.get("longitude").asDouble();
+                    String name = first.get("name").asText();
+
+                    coordinatesLabel.setText("Coordinates: " + latitude + ", " + longitude);
+                    cityLabel.setText("City: " + name);
+                } else {
+                    coordinatesLabel.setText("Coordinates: N/A");
+                    cityLabel.setText("City: N/A");
+                }
+            } else {
+                coordinatesLabel.setText("Coordinates: error");
+                cityLabel.setText("City: error");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            coordinatesLabel.setText("Coordinates: error");
+            cityLabel.setText("City: error");
+        }
     }
 
     public static void main(String[] args) {
