@@ -29,5 +29,14 @@
     { "time": "12:00", "temperature": 4, "condition": "Sonnig", "rain_chance": 20 },
     { "time": "18:00", "temperature": 3, "condition": "Bewölkt", "rain_chance": 10 },
     { "time": "24:00", "temperature": 1, "condition": "Klar", "rain_chance": 0 }
+  ],
+  "weekly_weather": [
+    { "day": "Montag", "condition": "Sonnig", "temperature": 5, "rain_chance": 30 },
+    { "day": "Dienstag", "condition": "Regen", "temperature": 3, "rain_chance": 70 },
+    { "day": "Mittwoch", "condition": "Bewölkt", "temperature": 4, "rain_chance": 20 },
+    { "day": "Donnerstag", "condition": "Klar", "temperature": 6, "rain_chance": 10 },
+    { "day": "Freitag", "condition": "Sonnig", "temperature": 7, "rain_chance": 0 },
+    { "day": "Samstag", "condition": "Regen", "temperature": 2, "rain_chance": 60 },
+    { "day": "Sonntag", "condition": "Bewölkt", "temperature": 3, "rain_chance": 40 }
   ]
 }

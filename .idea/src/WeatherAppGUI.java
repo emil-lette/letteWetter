@@ -1,163 +1,113 @@
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 
 public class WeatherAppGUI extends JFrame {
 
     public WeatherAppGUI() {
         setTitle("Wetter App");
-        setSize(1000, 300);
+        setSize(600, 900);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new GridLayout(1, 1));
+        setLayout(new GridLayout(3, 1)); // 3 Panels: Current, Tages, Wochen
 
-        /*============================================================================*/
+        double temperature = 0;
+        int weatherCode = 0;
+        JsonNode daily = null;
+        JsonNode weekly = null;
 
+        // JSON laden
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(new File(".idea/src/Datenbank/test.json"));
 
-        // current weather:
+            JsonNode weather = root.get("current_weather");
+            temperature = weather.get("temperature").asDouble();
+            weatherCode = weather.get("weathercode").asInt();
+
+            daily = root.get("daily_weather");
+            weekly = root.get("weekly_weather");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        /* ===== CURRENT WEATHER PANEL ===== */
         JPanel weatherPanel = new JPanel(new GridLayout(1, 2));
-        ImageIcon sunIcon = new ImageIcon("src/img/sun.png");
-        Image sunImage = sunIcon.getImage();
-        Image scaledSun = sunImage.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
 
-        JLabel currentCondition = new JLabel(new ImageIcon(scaledSun));
-        JLabel currentTemp = new JLabel("10°C");
+        // Icon auswählen anhand weatherCode
+        String iconPath;
+        switch (weatherCode) {
+            case 0 -> iconPath = "src/img/sun.png";
+            case 1, 2, 3 -> iconPath = "src/img/cloud.png";
+            case 61, 63, 65 -> iconPath = "src/img/rain.png";
+            case 71, 73, 75 -> iconPath = "src/img/snow.png";
+            default -> iconPath = "src/img/cloud.png";
+        }
+
+        ImageIcon icon = new ImageIcon(iconPath);
+        Image scaledIcon = icon.getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+
+        JLabel currentCondition = new JLabel(new ImageIcon(scaledIcon));
+        JLabel currentTemp = new JLabel(temperature + " °C", SwingConstants.CENTER);
+        currentTemp.setFont(new Font("Arial", Font.BOLD, 24));
 
         weatherPanel.add(currentCondition);
         weatherPanel.add(currentTemp);
 
+        /* ===== TAGESÜBERSICHT PANEL ===== */
+        JPanel tagesPanel = new JPanel();
+        int rows = (daily != null) ? daily.size() : 4;
+        tagesPanel.setLayout(new GridLayout(rows, 4, 10, 10)); // 4 Spalten: Zeit, Zustand, Temp, Regen%
 
-        /*============================================================================*/
+        if (daily != null) {
+            for (JsonNode entry : daily) {
+                String time = entry.get("time").asText();
+                String condition = entry.get("condition").asText();
+                String temp = entry.get("temperature").asText() + " °C";
+                String rain = entry.get("rain_chance").asText() + " %";
 
-        // Tagesübersicht
-        JPanel tagesPanel = new JPanel(new GridLayout(4, 4));
-        JLabel morgens = new JLabel("6 Uhr");
-        JLabel morgensT = new JLabel("10°C");
-        JLabel morgensC = new JLabel("regen");
-        JLabel morgensR = new JLabel("100%");
+                tagesPanel.add(new JLabel(time));
+                tagesPanel.add(new JLabel(condition));
+                tagesPanel.add(new JLabel(temp));
+                tagesPanel.add(new JLabel(rain));
+            }
+        } else {
+            System.out.println("Fehler beim Auslesen der Tagesübersicht");
+        }
 
+        /* ===== WOCHENÜBERSICHT PANEL ===== */
+        JPanel wochenPanel = new JPanel(new GridLayout(4, 7)); // 4 Reihen, 7 Tage
 
-        JLabel mittags = new JLabel("12 Uhr");
-        JLabel mittagsT = new JLabel("10°C");
-        JLabel mittagsC = new JLabel("sonnig");
-        JLabel mittagsR = new JLabel("50%");
-
-
-        JLabel abends = new JLabel("18 Uhr");
-        JLabel abendsT = new JLabel("10°C");
-        JLabel abendsC = new JLabel("sonnig");
-        JLabel abendsR = new JLabel("50%");
-
-        JLabel nachts = new JLabel("24 Uhr");
-        JLabel nachtsT = new JLabel("10°C");
-        JLabel nachtsC = new JLabel("sonnig");
-        JLabel nachtsR = new JLabel("50%");
-
-        tagesPanel.add(morgens);
-        tagesPanel.add(mittags);
-        tagesPanel.add(abends);
-        tagesPanel.add(nachts);
-
-        tagesPanel.add(morgensC);
-        tagesPanel.add(mittagsC);
-        tagesPanel.add(abendsC);
-        tagesPanel.add(nachtsC);
-
-        tagesPanel.add(morgensT);
-        tagesPanel.add(mittagsT);
-        tagesPanel.add(abendsT);
-        tagesPanel.add(nachtsT);
-
-        tagesPanel.add(morgensR);
-        tagesPanel.add(mittagsR);
-        tagesPanel.add(abendsR);
-        tagesPanel.add(nachtsR);
-        
-        /*============================================================================*/
-
-        // Wochenübersicht
-        JPanel wochenPanel = new JPanel(new GridLayout(4, 7));
-        
-        JLabel montag = new JLabel("Montag");
-        JLabel montagT = new JLabel("10°C");
-        JLabel montagC = new JLabel("sonnig");
-        JLabel montagR = new JLabel("50%");
-
-
-        JLabel dienstag = new JLabel("Dienstag");
-        JLabel dienstagT = new JLabel("10°C");
-        JLabel dienstagC = new JLabel("sonnig");
-        JLabel dienstagR = new JLabel("50%");
-
-        JLabel mittwoch = new JLabel("Mittwoch");
-        JLabel mittwochT = new JLabel("10°C");
-        JLabel mittwochC = new JLabel("sonnig");
-        JLabel mittwochgR = new JLabel("50%");
-
-
-        JLabel donnerstag = new JLabel("Donnerstag");
-        JLabel donnerstagT = new JLabel("10°C");
-        JLabel donnerstagC = new JLabel("sonnig");
-        JLabel donnerstagR = new JLabel("50%");
-
-        JLabel freitag = new JLabel("Freitag");
-        JLabel freitagT = new JLabel("10°C");
-        JLabel freitagC = new JLabel("sonnig");
-        JLabel freitagR = new JLabel("50%");
-
-        JLabel samstag = new JLabel("Samstag");
-        JLabel samstagT = new JLabel("10°C");
-        JLabel samstagC = new JLabel("sonnig");
-        JLabel samstagR = new JLabel("50%");
-
-        JLabel sonntag = new JLabel("Sonntag");
-        JLabel sonntagT = new JLabel("10°C");
-        JLabel sonntagC = new JLabel("sonnig");
-        JLabel sonntagR = new JLabel("50%");
-
-        wochenPanel.add(montag);
-        wochenPanel.add(dienstag);
-        wochenPanel.add(mittwoch);
-        wochenPanel.add(donnerstag);
-        wochenPanel.add(freitag);
-        wochenPanel.add(samstag);
-        wochenPanel.add(sonntag);
-
-        wochenPanel.add(montagC);
-        wochenPanel.add(dienstagC);
-        wochenPanel.add(mittwochC);
-        wochenPanel.add(donnerstagC);
-        wochenPanel.add(freitagC);
-        wochenPanel.add(samstagC);
-        wochenPanel.add(sonntagC);
-
-        wochenPanel.add(montagT);
-        wochenPanel.add(dienstagT);
-        wochenPanel.add(mittwochT);
-        wochenPanel.add(donnerstagT);
-        wochenPanel.add(freitagT);
-        wochenPanel.add(samstagT);
-        wochenPanel.add(sonntagT);
-
-        wochenPanel.add(montagR);
-        wochenPanel.add(dienstagR);
-        wochenPanel.add(mittwochgR);
-        wochenPanel.add(donnerstagR);
-        wochenPanel.add(freitagR);
-        wochenPanel.add(samstagR);
-        wochenPanel.add(sonntagR);
-
-
-        /*============================================================================*/
-
+        if (weekly != null) {
+            for (JsonNode entry : weekly) {
+                wochenPanel.add(new JLabel(entry.get("day").asText()));
+            }
+            for (JsonNode entry : weekly) {
+                wochenPanel.add(new JLabel(entry.get("condition").asText()));
+            }
+            for (JsonNode entry : weekly) {
+                wochenPanel.add(new JLabel(entry.get("temperature").asText() + " °C"));
+            }
+            for (JsonNode entry : weekly) {
+                wochenPanel.add(new JLabel(entry.get("rain_chance").asText() + " %"));
+            }
+        } else {
+            System.out.println("Fehler beim Auslesen der Wochenübersicht");
+            // Optional: Hier kannst du hartcodierte Werte hinzufügen
+        }
 
         // Panels zum JFrame hinzufügen
         add(weatherPanel);
-        add(wochenPanel);
         add(tagesPanel);
+        add(wochenPanel);
 
         setVisible(true);
     }
 
     public static void main(String[] args) {
-        new WeatherAppGUI();
+        SwingUtilities.invokeLater(WeatherAppGUI::new);
     }
 }
