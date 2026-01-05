@@ -110,4 +110,5 @@ public class WeatherAppGUI extends JFrame {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(WeatherAppGUI::new);
     }
+    //
 }
