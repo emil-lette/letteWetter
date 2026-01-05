@@ -11,36 +11,33 @@ public class WeatherAppGUI extends JFrame {
         setTitle("Wetter App");
         setSize(600, 900);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new BorderLayout(10, 10));
-
-        // ----------- Oben: Wetterinformationen (Panels) -----------
-
-        JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new GridLayout(3, 1, 10, 10)); // 3 Panels: Current, Tages, Wochen
+        setLayout(new GridLayout(3, 1)); // 3 Panels: Current, Tages, Wochen
 
         double temperature = 0;
         int weatherCode = 0;
         JsonNode daily = null;
-        JsonNode root = null;
+        JsonNode weekly = null;
 
         // JSON laden
         try {
             ObjectMapper mapper = new ObjectMapper();
-            root = mapper.readTree(new File(".idea/src/Datenbank/test.json"));
+            JsonNode root = mapper.readTree(new File(".idea/src/Datenbank/test.json"));
 
             JsonNode weather = root.get("current_weather");
             temperature = weather.get("temperature").asDouble();
             weatherCode = weather.get("weathercode").asInt();
 
             daily = root.get("daily_weather");
+            weekly = root.get("weekly_weather");
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        // ================= Current Weather Panel =================
+        /* ===== CURRENT WEATHER PANEL ===== */
         JPanel weatherPanel = new JPanel(new GridLayout(1, 2));
 
+        // Icon auswählen anhand weatherCode
         String iconPath;
         switch (weatherCode) {
             case 0 -> iconPath = "src/img/sun.png";
@@ -60,10 +57,10 @@ public class WeatherAppGUI extends JFrame {
         weatherPanel.add(currentCondition);
         weatherPanel.add(currentTemp);
 
-        // ================= Tagesübersicht Panel =================
+        /* ===== TAGESÜBERSICHT PANEL ===== */
         JPanel tagesPanel = new JPanel();
         int rows = (daily != null) ? daily.size() : 4;
-        tagesPanel.setLayout(new GridLayout(rows, 4, 10, 10)); // Zeit, Zustand, Temp, Regen%
+        tagesPanel.setLayout(new GridLayout(rows, 4, 10, 10)); // 4 Spalten: Zeit, Zustand, Temp, Regen%
 
         if (daily != null) {
             for (JsonNode entry : daily) {
@@ -77,37 +74,35 @@ public class WeatherAppGUI extends JFrame {
                 tagesPanel.add(new JLabel(temp));
                 tagesPanel.add(new JLabel(rain));
             }
+        } else {
+            System.out.println("Fehler beim Auslesen der Tagesübersicht");
         }
 
-        // ================= Wochenübersicht Panel =================
-        JPanel wochenPanel = new JPanel(new GridLayout(4, 7));
-        JsonNode weekly = (root != null && root.has("weekly_weather")) ? root.get("weekly_weather") : null;
+        /* ===== WOCHENÜBERSICHT PANEL ===== */
+        JPanel wochenPanel = new JPanel(new GridLayout(4, 7)); // 4 Reihen, 7 Tage
 
         if (weekly != null) {
-            for (JsonNode entry : weekly) wochenPanel.add(new JLabel(entry.get("day").asText()));
-            for (JsonNode entry : weekly) wochenPanel.add(new JLabel(entry.get("condition").asText()));
-            for (JsonNode entry : weekly) wochenPanel.add(new JLabel(entry.get("temperature").asText() + " °C"));
-            for (JsonNode entry : weekly) wochenPanel.add(new JLabel(entry.get("rain_chance").asText() + " %"));
+            for (JsonNode entry : weekly) {
+                wochenPanel.add(new JLabel(entry.get("day").asText()));
+            }
+            for (JsonNode entry : weekly) {
+                wochenPanel.add(new JLabel(entry.get("condition").asText()));
+            }
+            for (JsonNode entry : weekly) {
+                wochenPanel.add(new JLabel(entry.get("temperature").asText() + " °C"));
+            }
+            for (JsonNode entry : weekly) {
+                wochenPanel.add(new JLabel(entry.get("rain_chance").asText() + " %"));
+            }
+        } else {
+            System.out.println("Fehler beim Auslesen der Wochenübersicht");
+            // Optional: Hier kannst du hartcodierte Werte hinzufügen
         }
 
-        // Panels zum MainPanel hinzufügen
-        mainPanel.add(weatherPanel);
-        mainPanel.add(tagesPanel);
-        mainPanel.add(wochenPanel);
-
-        add(mainPanel, BorderLayout.CENTER);
-
-        // ================= Unten: Button für Search =================
-        JButton openSearchButton = new JButton("Search starten");
-        openSearchButton.setFont(new Font("Arial", Font.BOLD, 16));
-        openSearchButton.addActionListener(e -> {
-            // search.java starten
-            SwingUtilities.invokeLater(() -> new search());
-        });
-
-        JPanel bottomPanel = new JPanel();
-        bottomPanel.add(openSearchButton);
-        add(bottomPanel, BorderLayout.SOUTH);
+        // Panels zum JFrame hinzufügen
+        add(weatherPanel);
+        add(tagesPanel);
+        add(wochenPanel);
 
         setVisible(true);
     }
