@@ -8,7 +8,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-
+import java.net.http.HttpClient;
 public class search extends JFrame {
 
     private JTextField cityField;
@@ -38,62 +38,74 @@ public class search extends JFrame {
         resultLabel.setHorizontalAlignment(SwingConstants.CENTER);
         add(resultLabel, BorderLayout.CENTER);
 
+
+
         // Button Action
         searchButton.addActionListener(e -> {
             String city = cityField.getText().trim();
-            if (!city.isEmpty()) {
-                fetchCoordinates(city);
-            } else {
-                JOptionPane.showMessageDialog(this, "city");
+            if (city.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Enter a city");
+                return;
             }
+            try {
+                double[] coords = fetchCoordinates(city);
+                fetchWeather(coords[0], coords[1]);   // 🔑 THIS is the key line
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error fetching data");
+            }
+
         });
 
         setVisible(true);
     }
 
-    private void fetchCoordinates(String city) {
-        try {
-            String encodedCity = URLEncoder.encode(city, "UTF-8");
-            String apiUrl = "https://geocoding-api.open-meteo.com/v1/search?name=" + encodedCity;
 
-            URL url = new URL(apiUrl);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-
-            int responseCode = connection.getResponseCode();
-
-            if (responseCode == 200) {
-                InputStream responseStream = connection.getInputStream();
-
-                ObjectMapper mapper = new ObjectMapper();
-                JsonNode root = mapper.readTree(responseStream);
-
-                // JSON speichern
-                File outFile = new File(".idea/src/Datenbank/search.json");
-                mapper.writerWithDefaultPrettyPrinter().writeValue(outFile, root);
-
-                // Koordinaten anzeigen
-                if (root.has("results") && root.get("results").size() > 0) {
-                    JsonNode first = root.get("results").get(0);
-                    double latitude = first.get("latitude").asDouble();
-                    double longitude = first.get("longitude").asDouble();
-
-                    resultLabel.setText("lat.: " + latitude + ", long.: " + longitude);
-                } else {
-                    resultLabel.setText("no results");
-                }
-
-            } else {
-                resultLabel.setText("error: HTTP " + responseCode);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            resultLabel.setText("error.");
+    private double[] fetchCoordinates(String city) throws Exception {
+        String encodedCity = URLEncoder.encode(city, "UTF-8");
+        String apiUrl = "https://geocoding-api.open-meteo.com/v1/search?name=" + encodedCity;
+        URL url = new URL(apiUrl);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("GET");
+        if (connection.getResponseCode() != 200) {
+            throw new RuntimeException("HTTP error: " + connection.getResponseCode());
         }
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode root = mapper.readTree(connection.getInputStream());
+        if (root.has("results") && root.get("results").size() > 0) {
+            JsonNode first = root.get("results").get(0);
+            double latitude = first.get("latitude").asDouble();
+            double longitude = first.get("longitude").asDouble();
+            return new double[]{ latitude, longitude };
+        }
+        throw new RuntimeException("No city found");
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(search::new);
+    private void fetchWeather(double latitude, double longitude) throws Exception {
+        String apiUrl = String.format(
+                "https://api.open-meteo.com/v1/forecast?latitude=%f&longitude=%f&daily=weather_code,temperature_2m_max,temperature_2m_min,sunrise,sunset,uv_index_max,precipitation_probability_max&hourly=temperature_2m,rain,precipitation_probability,weather_code&current=temperature_2m,is_day,precipitation,rain,showers,snowfall,weather_code",
+                latitude,
+                longitude
+        );
+        URL url = new URL(apiUrl);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("GET");
+        if (connection.getResponseCode() != 200) {
+            throw new RuntimeException("HTTP error: " + connection.getResponseCode());
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode root = mapper.readTree(connection.getInputStream());
+        // Debug: confirm weather arrived
+        System.out.println(root.toPrettyString());
+        resultLabel.setText("Weather loaded");
+    }
+
+    //public static void main(String[] args) {
+    //    SwingUtilities.invokeLater(search::new);
+    //}
+    public static void main(String[] args) throws Exception {
+        search s = new search();
+        double[] coords = s.fetchCoordinates("Paris");
+        s.fetchWeather(coords[0], coords[1]);
     }
 }
