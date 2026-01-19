@@ -10,6 +10,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 
 
+
 public class WeatherAppGUI extends JFrame {
 
     /* ===== BACKGROUND IMAGES ===== */
